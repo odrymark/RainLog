@@ -1,0 +1,24 @@
+<DataSourcesHistory>
+  <DataSourceFromHistory isRemovedFromProject="false">
+    <data-source source="LOCAL" name="neondb@ep-broad-shape-b9o9ga43-pooler.c-7.eu-central-1.aws.neon.tech" uuid="5a5dbdd2-f106-4dc5-bbd4-24ae01103ff4">
+      <database-info product="PostgreSQL" version="18.7 (a21afb5)" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.3" dbms="POSTGRES" exact-version="18.7" exact-driver-version="42.7">
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://ep-broad-shape-b9o9ga43-pooler.c-7.eu-central-1.aws.neon.tech:5432/neondb</jdbc-url>
+      <secret-storage>master_key</secret-storage>
+      <user-name>neondb_owner</user-name>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="database" qname="@">
+            <node kind="schema" qname="@" />
+          </node>
+        </introspection-scope>
+      </schema-mapping>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </DataSourceFromHistory>
+</DataSourcesHistory>
