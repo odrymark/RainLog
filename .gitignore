@@ -1,1 +1,54 @@
+# === .NET 10 / C# (Server) ===
+# Build results & binaries
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+[Oo]bj/
+
+# Visual Studio / IDE specific files
+.vs/
+.idea/
+server/.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+server/Api/obj/
+
+# Environment-specific settings
 server/Api/appsettings.Development.json
+*.local.json
+
+# User-specific configuration files
+*.rsuser
+*.userprefs
+
+# === Node.js / npm / React (Client - nested in /client) ===
+# Dependencies
+client/node_modules/
+client/jspm_packages/
+
+# Production builds
+client/dist/
+client/build/
+
+# Optional npm cache & log files
+client/.npm
+client/npm-debug.log*
+client/yarn-debug.log*
+client/yarn-error.log*
+client/pnpm-debug.log*
+
+# Environment and local config files
+client/.env
+client/.env.local
+client/.env.development.local
+client/.env.test.local
+client/.env.production.local
+
+# Editor directories and files
+client/.vscode/*
+!client/.vscode/extensions.json
+!client/.vscode/settings.json
+client/.history/
