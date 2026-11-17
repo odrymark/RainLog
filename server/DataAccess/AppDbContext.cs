@@ -24,10 +24,14 @@ public class AppDbContext : DbContext
         {
             entity.Property(u => u.Username).HasMaxLength(255);
             entity.Property(u => u.Password).HasMaxLength(255);
+            entity.Property(u => u.AccessToken).HasMaxLength(255);
         });
 
-        modelBuilder.Entity<Client>()
-            .Property(c => c.Name).HasMaxLength(255);
+        modelBuilder.Entity<Client>(entity =>
+        {
+            entity.Property(c => c.Name).HasMaxLength(255);
+            entity.Property(c => c.ShortName).HasMaxLength(255);
+        });
 
         modelBuilder.Entity<Device>()
             .Property(d => d.Name).HasMaxLength(255);
@@ -89,7 +93,9 @@ public class User
     public long Id { get; set; }
     public long ClientId { get; set; }
     public string Username { get; set; } = string.Empty;
-    public string? Password { get; set; }
+    public string Password { get; set; } = string.Empty;
+    public string? AccessToken { get; set; }
+    public long? TokenExpiry { get; set; }
     public bool Active { get; set; }
 }
 
@@ -97,6 +103,7 @@ public class Client
 {
     public long Id { get; set; }
     public string Name { get; set; } = string.Empty;
+    public string ShortName { get; set; } = string.Empty;
     public bool Active { get; set; }
 }
 

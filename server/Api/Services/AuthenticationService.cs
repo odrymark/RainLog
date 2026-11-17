@@ -1,15 +1,16 @@
-﻿using Api.Dtos;
+﻿using Api.Common;
+using Api.Dtos;
 
 namespace Api.Services;
 
 public interface IAuthenticationService
 {
-    Task<(string? token, string? errorCode, string? errorMessage)> Login(LoginRequestDto dto);
+    Task<ServiceResponse<string>> Login(LoginRequestDto dto);
 }
 
 public class AuthenticationService : IAuthenticationService
 {
-    public async Task<(string? token, string? errorCode, string? errorMessage)> Login(LoginRequestDto dto)
+    public async Task<ServiceResponse<string>> Login(LoginRequestDto dto)
     {
         throw new NotImplementedException();
     }
