@@ -12,7 +12,7 @@ public class AuthenticationController(IAuthenticationService authenticationServi
 {
     [HttpPost]
     [AllowAnonymous]
-    public async Task<IActionResult> Login(LoginRequestDto dto)
+    public async Task<IActionResult> Login(LoginRequestDto dto, CancellationToken cancellationToken = default)
     {
         var response = await authenticationService.Login(dto);
 

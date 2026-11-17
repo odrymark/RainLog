@@ -17,11 +17,11 @@ public static class ErrorHandlerExtensions
 
         return errorCode switch
         {
-            "not_found" => controller.NotFound(response),
+            "user_not_found" => controller.NotFound(response),
 
             "conflict" => controller.Conflict(response),
 
-            "bad_request" => controller.BadRequest(response),
+            "password_too_long" => controller.BadRequest(response),
 
             _ => controller.StatusCode(
                 StatusCodes.Status500InternalServerError,
