@@ -1,4 +1,5 @@
-﻿using Api.Common;
+﻿using System.IdentityModel.Tokens.Jwt;
+using Api.Common;
 using Api.Dtos;
 using Api.Helpers;
 using DataAccess;
@@ -9,47 +10,65 @@ namespace Api.Services;
 
 public interface IAuthenticationService
 {
-    Task<ServiceResponse<string>> Login(LoginRequestDto dto);
+    Task<ServiceResponse<(string Token, string Refresh)>> Login(LoginRequestDto dto);
 }
 
-public class AuthenticationService(AppDbContext context, IPasswordHasher<User> passwordHasher) : IAuthenticationService
+public class AuthenticationService(AppDbContext context, IPasswordHasher<User> passwordHasher, IConfiguration configuration) : IAuthenticationService
 {
-    private static readonly TimeSpan TokenExpiry = TimeSpan.FromHours(24);
-    
-    public async Task<ServiceResponse<string>> Login(LoginRequestDto dto)
+    public async Task<ServiceResponse<(string Token, string Refresh)>> Login(LoginRequestDto dto)
     {
         var user = await context.Users
-            .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Username == dto.Username && u.Client.ShortName == dto.ClientShortName && u.Client.Active && u.Active);
 
         if (user == null)
-            return ServiceResponse<string>.Failure("user_not_found", "Invalid login credentials.");
+            return ServiceResponse<(string Token, string Refresh)>.Failure("user_not_found", "Invalid login credentials.");
 
         if (dto.Password.Length > 255)
-            return ServiceResponse<string>.Failure("password_too_long", "Maximum password length exceeded");
+            return ServiceResponse<(string Token, string Refresh)>.Failure("password_too_long", "Maximum password length exceeded");
 
         var result = passwordHasher.VerifyHashedPassword(user, user.Password, dto.Password);
         if (result == PasswordVerificationResult.Failed)
-            return ServiceResponse<string>.Failure("user_not_found", "Invalid login credentials.");
+            return ServiceResponse<(string Token, string Refresh)>.Failure("user_not_found", "Invalid login credentials.");
 
-        var token = await GetAccessToken(user);
+        var tokens = await GetAccessToken(user);
 
-        return ServiceResponse<string>.Success(token);
+        return ServiceResponse<(string Token, string Refresh)>.Success(tokens);
     }
 
-    private async Task<string> GetAccessToken(User user)
+    private async Task<(string AccessToken, string RefreshToken)> GetAccessToken(User user)
     {
         var currentUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-        if (user.AccessToken != null && user.TokenExpiry > currentUnix)
-            return user.AccessToken;
+        if (!string.IsNullOrEmpty(user.AccessToken) && TryGetJwtExpiryUnix(user.AccessToken, out long jwtExpiryUnix) && jwtExpiryUnix > currentUnix)
+        {
+            return (user.AccessToken, user.RefreshToken ?? string.Empty);
+        }
 
-        string token = AccessTokenGenerator.GenerateToken();
-        long expiry = DateTimeOffset.UtcNow.Add(TokenExpiry).ToUnixTimeSeconds();
+        string accessToken = TokenGenerator.GenerateAccessToken(user.Id.ToString(), configuration);
+        RefreshTokenResult refreshToken = TokenGenerator.GenerateRefreshToken(configuration);
 
-        user.AccessToken = token;
-        user.TokenExpiry = expiry;
+        user.AccessToken = accessToken;
+        user.RefreshToken = refreshToken.TokenHash;
+        user.RefreshTokenExpiry = refreshToken.ExpiresAt;
 
-        return token;
+        await context.SaveChangesAsync();
+
+        return (accessToken, refreshToken.Token);
+    }
+
+    private static bool TryGetJwtExpiryUnix(string token, out long expiryUnix)
+    {
+        expiryUnix = 0;
+
+        var handler = new JwtSecurityTokenHandler();
+        if (!handler.CanReadToken(token))
+            return false;
+
+        var jwt = handler.ReadJwtToken(token);
+        if (jwt.ValidTo == DateTime.MinValue)
+            return false;
+
+        expiryUnix = new DateTimeOffset(jwt.ValidTo, TimeSpan.Zero).ToUnixTimeSeconds();
+        return true;
     }
 }

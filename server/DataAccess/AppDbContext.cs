@@ -26,6 +26,7 @@ public class AppDbContext : DbContext
             entity.Property(u => u.Username).HasMaxLength(255);
             entity.Property(u => u.Password).HasMaxLength(255);
             entity.Property(u => u.AccessToken).HasMaxLength(255);
+            entity.Property(u => u.RefreshToken).HasMaxLength(255);
         });
 
         modelBuilder.Entity<Client>(entity =>
@@ -107,10 +108,6 @@ public class AppDbContext : DbContext
     }
 }
 
-// ==========================================
-// ENTITIES WITH GUID (UUID v7) IDENTIFIERS
-// ==========================================
-
 public class User
 {
     public Guid Id { get; set; } = Guid.CreateVersion7();
@@ -118,7 +115,8 @@ public class User
     public string Username { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string? AccessToken { get; set; }
-    public long? TokenExpiry { get; set; }
+    public string? RefreshToken { get; set; }
+    public long? RefreshTokenExpiry { get; set; }
     public bool Active { get; set; }
 
     public Client Client { get; set; } = null!;

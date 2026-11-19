@@ -181,9 +181,14 @@ namespace DataAccess.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("password");
 
-                    b.Property<long?>("TokenExpiry")
+                    b.Property<string>("RefreshToken")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("refresh_token");
+
+                    b.Property<long?>("RefreshTokenExpiry")
                         .HasColumnType("bigint")
-                        .HasColumnName("token_expiry");
+                        .HasColumnName("refresh_token_expiry");
 
                     b.Property<string>("Username")
                         .IsRequired()

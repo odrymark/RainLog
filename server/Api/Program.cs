@@ -5,6 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy.WithOrigins("http://localhost")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+    );
+}); 
+
 var connectionString = builder.Environment.IsDevelopment()
     ? builder.Configuration.GetConnectionString("DevelopmentConnection")
     : builder.Configuration.GetConnectionString("ProductionConnection");
